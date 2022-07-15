@@ -1,7 +1,7 @@
 
 // this macro shows live mouse coordinates in a constantly refreshing overlay
 // having LMB pressed down causes getCursorLoc(flags) to be 16, so that is used to escape the macro
-// shift key pressed down causes flags to be 0, which is also used as a backup escape button
+// shift key pressed down causes flags to be 1, which is also used as a backup escape button
 
 if (nImages==0){exit("No images found");}
 
