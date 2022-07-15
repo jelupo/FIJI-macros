@@ -31,7 +31,7 @@ while (true) {
 	wait(10);
 	
 	if (flags==16||flags==1) {break}
-	
+	 
 	}
 
 Overlay.clear;
