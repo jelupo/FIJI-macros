@@ -1,7 +1,3 @@
-// weka classifier location
-
-classifier_location = "C:/Users/Jelle/Desktop/weka/creative fiji/generator/classifier.model"
-
 // functions
 
 function generate(a,b,c,d) {
