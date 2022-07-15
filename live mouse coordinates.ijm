@@ -20,10 +20,9 @@ while (true) {
 	ystr="y: "+y; str[1]=lengthOf(ystr);
 	
 	Array.getStatistics(str, min, max, mean, stdDev);
-	strmax = d2s(max, 0);
 	
 	if ((getHeight()-y)<62){y-=67;}
-	if ((getWidth()-x)<(15*strmax)){x-=(17*strmax);}
+	if ((getWidth()-x)<(15*max)){x-=(17*max);}
 	
 	Overlay.drawString(xstr, x+10, y+20); 
 	Overlay.drawString(ystr, x+12, y+48);
