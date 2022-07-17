@@ -24,11 +24,11 @@ ping_1step = 200; //amount of ticks between pings of ping_1
 
 while (true) {
    
-    //make the cursor the target (uncomment next line)
-    //getCursorLoc(tar[0], tar[1], z, flags);
+    	//make the cursor the target (uncomment next line)
+    	//getCursorLoc(tar[0], tar[1], z, flags);
     
-    //get cursor flags only, ignoring xyz values
-    getCursorLoc(bla1, bla2, bla3, flags);
+    	//get cursor flags only, ignoring xyz values
+    	getCursorLoc(bla1, bla2, bla3, flags);
    
 	//do things here every frame
 	if (ping_1 == ping_1step) {Overlay.clear;} //clears the overlay upon ping_1
@@ -38,10 +38,10 @@ while (true) {
 	ping_1++; if (ping_1 > ping_1step) {ping_1 = 0;} //ping_1 step with reset
 	f++; if (f > 100000) {f = 0;} //clock step with reset
 
-    //exit the loop upon mouseclick
-    if (flags == 16 || flags == 48) {break}
-    wait(r);
-    }
+   	 //exit the loop upon mouseclick
+    	if (flags == 16 || flags == 48) {break}
+    	wait(r);
+    	}
 
 exit;
 
