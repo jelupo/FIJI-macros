@@ -9,7 +9,7 @@
 
 // INIT
 
-//newImage("Field Explorer 3000", "RGB black", 1000, 1000, 1);
+newImage("Field Explorer 3000", "RGB black", 1000, 1000, 1);
 if (nImages==0) {exit("I need an image");}
 
 w = getWidth(); //image width
