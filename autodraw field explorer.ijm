@@ -9,20 +9,19 @@
 
 // INIT
 
-newImage("Field Explorer 3000", "RGB black", 1000, 1000, 1);
-
+//newImage("Field Explorer 3000", "RGB black", 1000, 1000, 1);
 if (nImages==0) {exit("I need an image");}
 
 w = getWidth(); //image width
 h = getHeight(); //image height
 f = 0; //initialise a clock
-r = 1; //ms of frame wait
+r = 1; //ms value to wait between frames
 pos = newArray((0 * w), (0 * h)); //initialise xy position of circle
 tar = newArray((0.5 * w), (0.5 * h)); //initialise xy position of target
 ping_1 = 0; //intialise a ping timer
 ping_1step = 200; //amount of ticks between pings of ping_1
 interface = 0; //measurement circle indicators on or off
-measure_chance = 0; //likelihood 0-1 that there will be a measurement upon ping
+measure_chance = 0.9; //likelihood 0-1 that there will be a measurement upon ping
 
 // MAIN
 
@@ -39,8 +38,8 @@ while (true) { //this is where you compose every frame
 	//do things here every frame
 	if (ping_1 == ping_1step) {Overlay.clear;} //clears the overlay upon ping_1
 	
-	tar = changing_target_xy(ping_1); //finds a new target upon ping_1
-	circle_chasing_targetxy(tar[0], tar[1], f, pos); //sends a circle after the given target
+	tar = changing_target_xy(measure_chance); //finds a new target upon ping_1
+	circle_chasing_targetxy(tar[0], tar[1], pos); //sends a circle after the given target
 	
 	//progress clocks
 	ping_1++; if (ping_1 > ping_1step) {ping_1 = 0;} //ping_1 step with reset
@@ -57,7 +56,7 @@ exit;
 
 // FUNCTIONS
 
-function changing_target_xy(ping_1) {
+function changing_target_xy(measure_chance) {
 
 	newtar = Array.copy(tar);
 	
@@ -115,7 +114,7 @@ function changing_target_xy(ping_1) {
 			Overlay.drawString("RANGE", pos[0] + 5, pos[1] + 30);
 			prepx = pos[0]; prepy = pos[1];
 			run("Specify...", "width=&rangex height=&rangey x=&prepx y=&prepy oval centered");
-			//run("Gaussian Blur...", "sigma=1");
+			//run("Gaussian Blur...", "sigma=1"); //fun to activate over longer time courses
 			Overlay.addSelection("red", 3);	
 			setColor(50,150,50); setFont("SansSerif", 18, "plain");
 			Overlay.drawString("SCOPE", pos[0]-70, pos[1] + 30);
@@ -139,7 +138,7 @@ function changing_target_xy(ping_1) {
 	
 	}
 
-function circle_chasing_targetxy(tarx, tary, f, pos) { //draws an actual circle, chasing the target xy position
+function circle_chasing_targetxy(tarx, tary, pos) { //draws an actual circle, chasing the target xy position
 	
 	//current-target vectors in x and y
 	dx = -pos[0] + tarx; 
@@ -165,20 +164,19 @@ function circle_chasing_targetxy(tarx, tary, f, pos) { //draws an actual circle,
 	//speed based circle size (either or)
 	
 	s = 10 + 80 * vectorratio; 
-	if (s < 0) {s = 0;} if (s > 100) {s = 100;}
+	//if (s < 0) {s = 0;} if (s > 100) {s = 100;} //safeguarding max and min size whatever the formula used
 	
 	//debugging
-	if (ping_1 == ping_1step && interface == 1) {
-	setFont("SansSerif", 32, "bold"); setColor("red");
-	Overlay.drawString(vectorratio, pos[0], pos[1]);
-	}
+	//if (ping_1 == ping_1step && interface == 1) {
+	//setFont("SansSerif", 32, "bold"); setColor("red");
+	//Overlay.drawString(vectorratio, pos[0], pos[1]);
+	//}
 	
-	//drawing intensity based on speed
-	blue = 10 + 245 * vectorratio;
-	red = 200 * (sin(f/100));
-	green = 200 * (cos(f/144));
+	//drawing intensity based on speed and other shenanigans (time cycling red and green)
+	blue = 10 + (245 * vectorratio);
+	red = 200 * (sin (f / 100));
+	green = 200 * (cos (f / 144));
 	setColor(red, green, blue);
-
 	run("Specify...", "width=&s height=&s x=&xdraw y=&ydraw oval centered");	
 	fill();
 	
@@ -191,7 +189,6 @@ function rgb_to_hex(r, g, b) { //converts rgb values into hexadecimal, eg. for o
 	bhex = toHex(b); if (bhex.length == 1) {bhex = "0" + bhex;}
 	
 	hex = rhex + ghex + bhex;
-	
 	return hex;
 	
 	}
