@@ -1,0 +1,16 @@
+run("Line to Area");
+
+Roi.getContainedPoints(xpoints, ypoints);
+intensity = newArray(xpoints.length);
+
+for (i = 0; i < xpoints.length; i++) {
+	val = getPixel(xpoints[i], ypoints[i]);
+	intensity[i] = val;
+	}
+
+Table.create("Results");
+Table.setColumn("X", xpoints);
+Table.setColumn("Y", ypoints);
+Table.setColumn("Intensity", intensity);
+
+exit;
