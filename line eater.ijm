@@ -4,6 +4,7 @@
 //by eating the line starting from the leftmost end,
 //and building a memory of the line while it's eating.
 //then it measures that sequence in the original and lists everything.
+//line can be convoluted but not touching itself
 
 //it depends on having 1 skeleton line in the picture
 
