@@ -8,9 +8,9 @@
 //it depends on having 1 skeleton line in the picture
 
 
-print("Working...");
+print("\\Clear");
+print("Line eating...");
 selectWindow("Log");
-setLocation(0.05 * screenWidth, 0.05 * screenHeight);
 
 setBatchMode(true);
 
