@@ -4,6 +4,8 @@
 // shift key pressed down causes flags to be 1, which is also used as a backup escape button
 // the live text avoids the rightmost and bottom-most image edges, and left or up to do this.
 
+//open an image and run this macro
+
 if (nImages==0){exit("No images found");}
 
 setBatchMode(true);
