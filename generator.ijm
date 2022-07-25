@@ -1,3 +1,5 @@
+// a simple random pattern generator, run in FIJI
+
 // functions
 
 function generate(a,b,c,d) {
