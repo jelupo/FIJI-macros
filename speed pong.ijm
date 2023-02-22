@@ -32,7 +32,7 @@ setColor(textcolor);
 //init variables
 paddle_height = 30; paddle_width = 5;
 ball_x = 0.5 * getWidth; ball_y = 0.5 * getHeight;
-ball_width = 5; ball_height = 5;
+ball_width = 2; ball_height = 2;
 ball_x_vel = -1; ball_y_vel = 1;
 score_l = 0; score_r = 0;
 paddle_1_y = 10;
@@ -152,8 +152,8 @@ while (true) { //do this every frame
 	
 	//draw ball
 	ball_draw_color = 150 + ((255-150) * (abs(ball_y_vel) / abs(ball_y_vel_max)));
-	for (i = -(0.5*ball_height); i < (0.5*ball_height); i++) {
-		for (j = -(0.5*ball_width); j < (0.5*ball_width); j++) {
+	for (i = -ball_height; i < ball_height; i++) {
+		for (j = -ball_width; j < ball_width; j++) {
 			setPixel(ball_x + j, ball_y + i, ball_draw_color);
 		}
 	}
