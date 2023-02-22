@@ -1,4 +1,4 @@
-//shadow pong: predict the path!
+//Speed Pong!
 //jelle postma, 2023
 
 //to do: 5 consecutive hits grants enemy weakness (with messages on screen)?
