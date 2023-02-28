@@ -15,7 +15,7 @@
 //threshold values to be used for picking up objects
 ch1_threshold = 1000;
 ch2_threshold = 1000;
-ch2_threshold = 1000;
+ch3_threshold = 1000;
 
 //register image properties
 title = getTitle();
