@@ -1,9 +1,6 @@
 //Jelle Postma, Romee Groenbos, Radboud University, 2023
 
 
-//to do: troubleshooten van verkeerde breedtes
-
-
 //begin met een stack (of 1) van images van al dan niet gevouwen blaadjes
 
 //vragen om de juiste classifier
