@@ -7,7 +7,6 @@
 //init game
 r = 12; //framerate in ms
 min_gray = 20; //background level
-clock = 0; //init clock
 
 //create scene
 run("Close All"); newImage("New", "8-bit Black", 100, 100, 1);
@@ -118,7 +117,6 @@ while (true) { //do this every frame
 	//end of loop routine
 	updateDisplay();
 	wait(r);
-	if (clock <= 1e6) {clock++;} else {clock = 0;}
 	if (mouse_flags == 16 || mouse_flags == 1) break; //exit upon click
 	}
 
