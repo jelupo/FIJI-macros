@@ -1,4 +1,4 @@
-
+//move mouse across the image
 
 
 r = 0; //framerate in ms
@@ -30,8 +30,8 @@ while (true) { //do this every frame
 	getCursorLoc(mouse_x, mouse_y, mouse_z, mouse_flags);
 	
 	//override cursor because why not
-	mouse_x = 50 - (sin(clock/113) * sin(clock/50) * cos(clock/100)) * 30; //simple circle
-	mouse_y = 80 - sin(clock/200) * 10;
+	//mouse_x = 50 - (sin(clock/113) * sin(clock/50) * cos(clock/100)) * 30; //simple circle
+	//mouse_y = 80 - sin(clock/200) * 10;
 	//mouse_y = 50 - cos(clock/100) * 30;
 	//mouse_x = 50 + (sin(clock/102) * sin(clock/216) * cos(clock/12)) * 40; //convoluted pattern
 	//mouse_y = 50 - (cos(clock/107) * cos(clock/31) * sin(clock/7)) * 40;
