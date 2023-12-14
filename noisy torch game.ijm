@@ -1,3 +1,9 @@
+//Jelle Postma
+
+// run this in FIJI
+// shine your torch into a noisy night
+// move the mouse cursor around to illuminate a different area
+
 //initializing a new game
 r = 10; //framerate in ms
 min_gray = 20; //background level
