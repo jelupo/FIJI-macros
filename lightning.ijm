@@ -9,12 +9,14 @@ run("Select None");
 setTool("rectangle");
 
 newImage("Untitled", "8-bit black", 512, 512, 1);
+setForegroundColor(255, 255, 255);
+setBackgroundColor(0, 0, 0);
 
 diagonal = Math.sqrt(Math.sqr(getWidth) + Math.sqr(getHeight));
 npoints = 7;
 linewidth = 200; //chungal factor
 drag = 20; //amount of pixels to move the mouse to trigger a draw
-framewait = 50; //amount of ms to wait at the end of each draw
+framewait = 100; //amount of ms to wait at the end of each draw
 
 
 drawing_loop(0,0,npoints); //maybe put the looping part over here, to control live variables
@@ -101,33 +103,26 @@ function drawing_loop(xstart,ystart,points) {
 	    	}	
 		
 		//for draw upon cursor moves far enough
-		if ((abs(x - x1) > drag)||(abs(y - y1) > drag)) 
-		{draw = true; x1 = x; y1 = y;} 
-		else {draw = false;}
+		//if ((abs(x - x1) > drag)||(abs(y - y1) > drag)) 
+		//{draw = true; x1 = x; y1 = y;} 
+		//else {draw = false;}
 		
 		//for draw upon any movement
-		//if (x1 != x || y1 != y) {draw = true;} 
-		//else {draw = false;} 
-		//x1 = x; y1 = y;
+		if (x1 != x || y1 != y) {draw = true;} 
+		else {draw = false;} 
+		x1 = x; y1 = y;
 	
 		//pixel decay
 		//using apply global threshold or something? not individual pixels...
-		setMinAndMax(40, 255);
-		run("Apply LUT");
+				run("Apply LUT");
+		setMinAndMax(0, 300);
+
 		
 		//exiting macro when user clicks the image
 	    if (flags==16) {exit;} 
 	   	else {wait(framewait);}
 	    }  
 	}
-
-
-
-
-
-
-
-
 
 
 exit;
