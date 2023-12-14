@@ -1,4 +1,6 @@
+// Jelle Postma, 2023
 
+// This thing tries to catch your mouse cursor, better move away!
 
 f = 0; //initialize clock
 r = 100; //framerate in ms
