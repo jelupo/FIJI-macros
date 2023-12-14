@@ -1,3 +1,8 @@
+// Jelle Postma
+
+// run this in FIJI
+// move the mouse over the blue window to simulate a "night vision" Zoomed-In view of the bigger area in the other image
+
 //init
 run("Close All");
 world_size = 500;
