@@ -1,0 +1,67 @@
+//substack splitter 2024_04_30
+//jelle postma, alexandra olander, radboud university nijmegen
+
+//asks for a folder containing TIFF stacks
+//asks for desired substack size
+//opens all tiffs, substacks them, saves the substack and its max projection to a new Results folder
+//handles remainder amounts (non-divisible by desired substack size) by using modulo math
+//makes a separate final stack out of the remainder and saves it also
+
+//which folder of TIFFs to analyze?
+waitForUser("Next, choose folder of TIFFs to split up and save substacks");
+images_dir = getDir("Select folder");
+waitForUser("Next, choose how many slices should be in each substack");
+substack_slice_amount = getNumber("How many slices per substack?", 10);
+analyze_list = getFileList(images_dir);
+results_dir = images_dir + "/Results";
+File.makeDirectory(results_dir);
+
+//analysis loop for each image in folder
+for (j = 0; j < analyze_list.length; j++) {
+	if (endsWith(analyze_list[j], "tif")) {
+	open(images_dir + analyze_list[j]);
+
+		//splitting into substacks and taking note of the remainder
+		name = getTitle;
+		Stack.getDimensions(width, height, channels, slices, frames);
+		remainder = slices%substack_slice_amount;
+		body = slices - remainder;
+		substacks_number = body / substack_slice_amount;
+		
+		//produce body substacks
+		for (i = 0; i < substacks_number; i++) {
+			substack_name = name + "_" + (i+1);
+			slice_start_substack = (i * substack_slice_amount) + 1;
+			slice_end_substack = (i * substack_slice_amount) + substack_slice_amount;
+			run("Duplicate...", "title=&substack_name duplicate range=&slice_start_substack-slice_end_substack");
+			selectImage(name);
+			}
+		
+		//produce remainder substack
+		if (remainder > 0) {
+			substack_remainder_number = substacks_number + 1;
+			substack_remainder_name = name + "_" + substack_remainder_number;
+			slice_start_remainder = body + 1;
+			slice_end_remainder = slices;
+			run("Duplicate...", "title=&substack_remainder_name duplicate range=&slice_start_remainder-slice_end_remainder");
+		}
+		close(name); //close the original
+		open_images = newArray;
+		
+		//save all generated stacks
+		for (k = 0; k < nImages; k++) {
+			selectImage(k+1);
+			open_images = Array.concat(open_images, getTitle);
+		}
+		
+		for (l = 0; l < open_images.length; l++) {
+			selectImage(open_images[l]);
+			run("Z Project...", "projection=[Max Intensity]");
+			saveAs("TIF", results_dir + "/" + getTitle);
+			close();
+			saveAs("TIF", results_dir + "/" + getTitle);
+			close();
+			}
+	
+	}
+}
