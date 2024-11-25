@@ -1,0 +1,159 @@
+//Expresion Quantifyer V6
+
+//Jelle Postma, Frank Wagener, Ghazal Hasanzadah, Radboud University/Radboud UMC, 2024
+//this macro takes 2-channel .czi widefield epifluorescence images, and is made to process a folder of them
+//the macro outputs various potentially useful readouts of the red (second, expression) channel, specifically in cell populated areas (Labkit-defined).
+//the macro reports the amount of nuclei (Labkit-defined) in the images
+//classifiers needed: nuclei_classifier.classifier and cell_classifier.classifier (github)
+//plugins needed for GPU-run: CLIJ2 (and an nVidia GPU)
+//plugins needed for CPU-run: None (just adjust the following toggle true/false:)
+GPU = "true";
+
+//ask user for folder
+Dialog.create("CZI images folder to be selected");
+Dialog.addMessage("Next, choose the folder of .czi microscopy images to be analyzed");
+Dialog.show;
+images_dir = getDir("CZI-images folder");
+
+//ask user for classifier to be used
+Dialog.create("Labkit classifier to be selected");
+Dialog.addMessage("Next, choose the Labkit-classifier to detect nuclei");
+Dialog.show;
+classifier_path_nuclei = File.openDialog("Labkit classifier nuclei");
+
+//ask user for classifier to be used
+Dialog.create("Labkit classifier to be selected");
+Dialog.addMessage("Next, choose the Labkit-classifier to detect cells");
+Dialog.show;
+classifier_path_cells = File.openDialog("Labkit-classifier cells");
+
+//ask user for background to be used when working on red
+Dialog.create("Which background value to use for red (expression channel) signal subtraction?");
+Dialog.addNumber("Specify red channel background value to subtract", 144);
+Dialog.show();
+background = Dialog.getNumber();
+
+//prepare timestamp for labeling results
+getDateAndTime(year, month, dayOfWeek, dayOfMonth, hour, minute, second, msec);
+timestamp = d2s(year,0) + "-" + d2s(month+1,0) + "-" + d2s(dayOfMonth,0) + " " + d2s(hour,0) + "h" + d2s(minute,0) + "m";
+
+//obtaining paths of all CZI files in folder
+list = getFileList(images_dir);
+analyze_list = newArray();
+for (i = 0; i < list.length; i++) {
+	if(endsWith(list[i], ".czi")) {
+		analyze_list = Array.concat(analyze_list,list[i]);
+		}
+}
+
+nuclei_list = newArray; //preparing a new array to hold nuclei values for each image
+red_list = newArray; //preparing a new array to hold red values calculated from each image
+per_cell_list = newArray; //preparing new array to hold calculated and corrected average expression values per cell
+cell_area_list = newArray; //preparing array to hold total cell areas per image in um squared
+average_signal_list = newArray; //preparing array to hold average signal in entire cell-area.
+
+//start opening CZI files and analyzing only the first series in each
+
+for (i=0; i<analyze_list.length; i++) { //repeat the opening/analyzing as many times as there are files
+
+//analyze blue
+open_path = images_dir + analyze_list[i];
+run("Bio-Formats Importer", "open=[&open_path] autoscale color_mode=Default view=Hyperstack stack_order=XYCZT series_1");
+title = getTitle;
+Stack.setChannel(1);
+run("Duplicate...", "title=dupe duplicate channels=1");
+run("Calculate Probability Map With Labkit", "segmenter_file=[" + classifier_path_nuclei + "] use_gpu=" + GPU + "");
+
+
+while(true) {
+	if(isOpen("probability map for dupe")) {
+		selectWindow("probability map for dupe"); 
+		break;
+		}
+	if(isOpen("probability map for dupe (V)")) {
+		selectWindow("probability map for dupe (V)"); 
+		break;
+		}
+	wait(10);
+	}
+
+run("Duplicate...", "title=dupe_prob_nuclei duplicate channels=1");
+setThreshold(0.87, 1); //value decided from an optimization session - manual threshold chosen because used on normalized 0-to-1 probabilities
+setOption("BlackBackground", true);
+run("Convert to Mask");
+
+roiManager("reset");
+run("Analyze Particles...", "size=50-1000 circularity=0.05-1.00 include add");
+nuclei_list[i] = roiManager("count");
+close("dupe_prob_nuclei");
+
+//analyze red
+selectWindow(title);
+Stack.setChannel(2);
+run("Duplicate...", "title=dupe_red duplicate channels=2");
+run("Calculate Probability Map With Labkit", "segmenter_file=[" + classifier_path_cells + "] use_gpu=" + GPU + "");
+
+while(true) {
+	if(isOpen("probability map for dupe_red")) {
+		selectWindow("probability map for dupe_red"); 
+		break;
+		}
+	if(isOpen("probability map for dupe_red (V)")) {
+		selectWindow("probability map for dupe_red (V)"); 
+		break;
+		}
+	wait(10);
+	}
+
+run("Duplicate...", "title=dupe_prob_cells duplicate channels=1");
+setThreshold(0.5, 1); //value decided from an optimization session - manual threshold chosen because used on normalized 0-to-1 probabilities
+setOption("BlackBackground", true);
+run("Convert to Mask"); //dupe_prob_cells is now thresholded
+
+selectWindow("dupe_red");
+setThreshold(1000, 65535); //obtain areas of crazy high signals (above 1000)
+setOption("BlackBackground", true);
+run("Convert to Mask");
+run("Create Selection"); //now have the selection of those bright parts
+
+selectWindow("dupe_prob_cells"); //which is thresholded and binary
+run("Restore Selection"); //select the too-bright areas
+run("Clear", "slice"); //remove the too-bright areas from final measurement area
+run("Select None");
+
+run("Create Selection");
+selectWindow(title);
+run("Restore Selection");
+
+Roi.getContainedPoints(xpoints, ypoints);
+cell_pixels_amount = xpoints.length;
+total_background_to_subtract = xpoints.length * background;
+
+total_signal = getValue("IntDen raw");
+cell_area_list[i] = getValue("Area");
+average_signal_list[i] = getValue("Mean");
+bg_corrected_total_signal = total_signal - total_background_to_subtract;
+red_list[i] = bg_corrected_total_signal;
+per_cell_list[i] = bg_corrected_total_signal / nuclei_list[i];
+
+run("Close All");
+
+}
+
+Table.create("Results of analysis run started at " + timestamp);
+Table.setColumn("Image name", analyze_list);
+Table.setColumn("Nuclei counted", nuclei_list);
+Table.setColumn("Total cell area defined (micron squared)", cell_area_list);
+Table.setColumn("Average fluorescence level in entire cell-area", average_signal_list);
+Table.setColumn("Background corrected cumulative red signal in cells area", red_list);
+Table.setColumn("Cumulative red signal per cell (average, using nuclei count)", per_cell_list);
+
+close("Log");
+print("Done!");
+print("Results are in a new Table window");
+print("");
+
+
+
+
+
